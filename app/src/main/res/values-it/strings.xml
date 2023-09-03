@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calcola Sconto</string>
+    <string name="home">Home</string>
+    <string name="info">Informazioni</string>
+    <string name="settings">Impostazioni</string>
+    <string name="insert_price_placeholder">Inserisci prezzo</string>
+    <string name="insert_percentage_placeholder">Inserisci percentuale</string>
+    <string name="calculate_button_text">Calcola</string>
+    <string name="clear_button_text">Azzera</string>
+    <string name="saving_text">Risparmio: %1$s</string>
+    <string name="copy_result_button_text">Copia risultato</string>
+</resources>
