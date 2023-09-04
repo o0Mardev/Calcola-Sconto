@@ -1,6 +1,5 @@
 package com.mardev.calcolasconto.ui.home.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,19 +31,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.mardev.calcolasconto.R
 import com.mardev.calcolasconto.ui.home.viewmodel.HomeScreenEvent
 import com.mardev.calcolasconto.ui.home.viewmodel.HomeScreenState
-import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsViewModel
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenState
 
 @Composable
 fun HomeScreen(
-    settingsViewModel: SettingsViewModel = hiltViewModel(),
     state: HomeScreenState,
+    appState: SettingsScreenState,
     onEvent: (HomeScreenEvent) -> Unit
 ) {
-    val isVibrationEnabled = settingsViewModel.currentVibrationOption
+    val isVibrationEnabled = appState.currentVibrationOption
     Box {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -105,7 +103,6 @@ fun HomeScreen(
             ) {
                 val view = LocalView.current
                 OperationButton(stringResource(R.string.calculate_button_text)) {
-                    Log.d("TAG", "HomeScreen: viewModel=${settingsViewModel.hashCode()}")
                     onEvent(
                         HomeScreenEvent.OnCalculateButtonClick(isVibrationEnabled, view)
                     )

@@ -46,7 +46,8 @@ import com.mardev.calcolasconto.ui.navigation.Info
 import com.mardev.calcolasconto.ui.navigation.Settings
 import com.mardev.calcolasconto.ui.navigation.calcolaScontoScreens
 import com.mardev.calcolasconto.ui.settings.view.SettingsScreen
-import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsViewModel
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenState
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenViewModel
 import com.mardev.calcolasconto.ui.theme.CalcolaScontoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -57,16 +58,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-            val viewModelStoreOwner = LocalViewModelStoreOwner.current
-            val settingsViewModel: SettingsViewModel = hiltViewModel(viewModelStoreOwner!!)
+            // This is used for sharing the same instance of the SettingsViewModel among the Activity and the Composable
+            val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current)
+            val settingsViewModel: SettingsScreenViewModel = hiltViewModel(viewModelStoreOwner)
 
-            val darkTheme = when (settingsViewModel.currentDarkModeOption) {
-                "light-mode" -> false
-                "dark-mode" -> true
-                else -> isSystemInDarkTheme()
-            }
-            val dynamicColor = settingsViewModel.currentDynamicColorOption
-            CalcolaScontoApp(viewModelStoreOwner, darkTheme, dynamicColor)
+            val appState by settingsViewModel.uiState.collectAsState()
+
+            CalcolaScontoApp(appState, viewModelStoreOwner)
         }
     }
 }
@@ -74,15 +72,19 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CalcolaScontoApp(
-    viewModelStoreOwner: ViewModelStoreOwner,
-    darkTheme: Boolean,
-    dynamicColor: Boolean,
+    appState: SettingsScreenState,
+    viewModelStoreOwner: ViewModelStoreOwner
 ) {
 
     CalcolaScontoTheme(
-        darkTheme = darkTheme,
-        dynamicColor = dynamicColor
+        darkTheme = when(appState.currentDarkModeOption){
+            "dark-mode" -> true
+            "light-mode" -> false
+            else -> isSystemInDarkTheme()
+        },
+        dynamicColor = appState.currentDynamicColorOption
     ) {
+
         val navController = rememberNavController()
         val drawerState = rememberDrawerState(DrawerValue.Closed)
         val scope = rememberCoroutineScope()
@@ -139,20 +141,24 @@ private fun CalcolaScontoApp(
                             composable(route = Home.route) {
                                 val viewModel: HomeScreenViewModel = hiltViewModel()
                                 val state: HomeScreenState by viewModel.uiState.collectAsState()
+
                                 HomeScreen(
-                                    settingsViewModel = hiltViewModel(viewModelStoreOwner),
                                     state = state,
-                                    onEvent = viewModel::onEvent,
+                                    appState = appState,
+                                    onEvent = viewModel::onEvent
                                 )
                             }
                             composable(route = Info.route) {
                                 InfoScreen(
-
+                                    appState = appState
                                 )
                             }
                             composable(route = Settings.route) {
+                                val viewModel: SettingsScreenViewModel = hiltViewModel(viewModelStoreOwner)
+
                                 SettingsScreen(
-                                    viewModel = hiltViewModel(viewModelStoreOwner)
+                                    state = appState,
+                                    onEvent = viewModel::onEvent
                                 )
                             }
                         }

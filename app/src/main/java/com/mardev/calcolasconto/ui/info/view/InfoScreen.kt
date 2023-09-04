@@ -1,5 +1,6 @@
 package com.mardev.calcolasconto.ui.info.view
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,12 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenState
 
 @Composable
-fun InfoScreen() {
+fun InfoScreen(
+    appState: SettingsScreenState
+) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -37,7 +42,8 @@ fun InfoScreen() {
                 "Aiuta con le traduzioni",
                 "Apri una richiesta di modifica su GitHub",
                 Icons.Default.Translate,
-                "https://google.com"
+                "https://google.com",
+                appState.currentVibrationOption
             )
         }
         item {
@@ -45,7 +51,8 @@ fun InfoScreen() {
                 "Feedback e richieste",
                 "Questo è un progetto open-source",
                 Icons.Default.Feedback,
-                "https://google.com"
+                "https://google.com",
+                appState.currentVibrationOption
             )
         }
         item {
@@ -53,7 +60,8 @@ fun InfoScreen() {
                 "Versione app",
                 "1.0.0",
                 Icons.Default.SystemUpdate,
-                null
+                null,
+                appState.currentVibrationOption
             )
         }
     }
@@ -62,11 +70,15 @@ fun InfoScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MyCard(title: String, subtitle: String, icon: ImageVector, uri: String?) {
+private fun MyCard(title: String, subtitle: String, icon: ImageVector, uri: String?, isVibrationEnabled: Boolean) {
     val uriHandler = LocalUriHandler.current
+    val view = LocalView.current
 
     Card(
         onClick = {
+            if (isVibrationEnabled){
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
             if (uri!=null){
                 uriHandler.openUri(uri)
             }

@@ -19,13 +19,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsViewModel
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenEvent
+import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenState
 
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel()
+    state: SettingsScreenState,
+    onEvent: (SettingsScreenEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -36,14 +37,14 @@ fun SettingsScreen(
 
         Text(text = "Aspetto")
 
-        MyAlertDialog(viewModel.currentDarkModeOption) { selectedOption ->
-            viewModel.saveDarkModeOption(selectedOption)
+        MyAlertDialog(state.currentDarkModeOption) { selectedOption ->
+            onEvent(SettingsScreenEvent.OnSaveDarkModeOption(selectedOption))
         }
 
         var dynamicColorSwitchInfo: SwitchInfo by remember {
             mutableStateOf(
                 SwitchInfo(
-                    viewModel.currentDynamicColorOption,
+                    state.currentDynamicColorOption,
                     "Colori dinamici",
                     "Scegli se attivare i colori dinamici\n(Android 12+)",
                     Icons.Default.ColorLens
@@ -51,7 +52,7 @@ fun SettingsScreen(
             )
         }
         SwitchLine(dynamicColorSwitchInfo) { isChecked ->
-            viewModel.saveDynamicColorOption(isChecked)
+            onEvent(SettingsScreenEvent.OnSaveDynamicColorOption(isChecked))
             dynamicColorSwitchInfo = dynamicColorSwitchInfo.copy(isChecked = isChecked)
         }
 
@@ -64,7 +65,7 @@ fun SettingsScreen(
         var vibrationSwitchInfo: SwitchInfo by remember {
             mutableStateOf(
                 SwitchInfo(
-                    viewModel.currentVibrationOption,
+                    state.currentVibrationOption,
                     "Vibrazione",
                     "Scegli se attivare la vibrazione",
                     Icons.Default.Vibration
@@ -72,7 +73,7 @@ fun SettingsScreen(
             )
         }
         SwitchLine(vibrationSwitchInfo) { isChecked ->
-            viewModel.saveVibrationOption(isChecked)
+            onEvent(SettingsScreenEvent.OnSaveVibrationOption(isChecked))
             vibrationSwitchInfo = vibrationSwitchInfo.copy(isChecked = isChecked)
         }
     }
