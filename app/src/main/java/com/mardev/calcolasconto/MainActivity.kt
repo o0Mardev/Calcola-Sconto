@@ -50,12 +50,22 @@ import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenState
 import com.mardev.calcolasconto.ui.settings.viewmodel.SettingsScreenViewModel
 import com.mardev.calcolasconto.ui.theme.CalcolaScontoTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // We create a separate CoroutineScope for the API call, and we will cancel it when the job is completed inside UpdateManager.
+        val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
+        coroutineScope.launch(Dispatchers.IO) {
+            UpdateManager().checkForAppUpdate()
+        }
+
         installSplashScreen()
         setContent {
             // This is used for sharing the same instance of the SettingsViewModel among the Activity and the Composable
