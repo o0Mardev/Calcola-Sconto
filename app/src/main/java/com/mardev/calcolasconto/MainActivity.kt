@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
         // We create a separate CoroutineScope for the API call, and we will cancel it when the job is completed inside UpdateManager.
         val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
         coroutineScope.launch(Dispatchers.IO) {
-            UpdateManager().checkForAppUpdate()
+            UpdateManager(applicationContext).checkForAppUpdate()
         }
 
         installSplashScreen()
