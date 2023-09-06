@@ -25,27 +25,16 @@ class UpdateManager(val context: Context) {
         .build()
         .create(Api::class.java)
 
-    /**
-     * Return AppUpdateInfo or null if the call is not successful
-     */
-    private suspend fun getAppUpdateInfo(): AppUpdateInfo? {
-        val response = api.getAppUpdateInfo()
-        return if (response.isSuccessful) {
-            response.body()
-        } else null
-    }
+    private var downloadUrl: String? = null
 
-    suspend fun checkForAppUpdate() {
+    suspend fun checkForAppUpdate(): Boolean {
         try {
             val appUpdateInfo = getAppUpdateInfo()
             if (appUpdateInfo != null) {
                 if (appUpdateInfo.latestVersionCode > BuildConfig.VERSION_CODE) {
                     Log.d("TAG", "getAppUpdateInfo: There's an update available")
-                    val update = downloadUpdate(appUpdateInfo.downloadUrl)
-                    if (update != null) {
-                        val file = saveUpdateFile(update)
-                        installUpdateFile(file)
-                    }
+                    downloadUrl = appUpdateInfo.downloadUrl
+                    return true
                 } else {
                     Log.d("TAG", "checkForAppUpdate: There's no update available")
                 }
@@ -53,6 +42,25 @@ class UpdateManager(val context: Context) {
         } catch (e: Exception) {
             Log.e("TAG", "Error checking for update: ${e.message}")
         }
+        return false
+    }
+
+    suspend fun update(){
+        val url = downloadUrl
+        if (url!=null){
+            val update = downloadUpdate(url)
+            if (update != null) {
+                val file = saveUpdateFile(update)
+                installUpdateFile(file)
+            }
+        }
+    }
+
+    private suspend fun getAppUpdateInfo(): AppUpdateInfo? {
+        val response = api.getAppUpdateInfo()
+        return if (response.isSuccessful) {
+            response.body()
+        } else null
     }
 
     private suspend fun downloadUpdate(fileUrl: String): ResponseBody? {
