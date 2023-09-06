@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 private const val BASE_URL = "https://raw.githubusercontent.com/o0Mardev/Calcola-Sconto/master/"
 
 
-class UpdateManager(val context: Context) {
+class UpdateManager(private val context: Context) {
     private val api = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -31,6 +31,7 @@ class UpdateManager(val context: Context) {
         try {
             val appUpdateInfo = getAppUpdateInfo()
             if (appUpdateInfo != null) {
+                Log.d("TAG", "checkForAppUpdate: appUpdateInfo=$appUpdateInfo")
                 if (appUpdateInfo.latestVersionCode > BuildConfig.VERSION_CODE) {
                     Log.d("TAG", "getAppUpdateInfo: There's an update available")
                     downloadUrl = appUpdateInfo.downloadUrl
@@ -46,6 +47,7 @@ class UpdateManager(val context: Context) {
     }
 
     suspend fun update(){
+        Log.d("TAG", "update: function called")
         val url = downloadUrl
         if (url!=null){
             val update = downloadUpdate(url)
