@@ -2,7 +2,6 @@ package com.mardev.calcolasconto.ui.main
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -72,16 +70,9 @@ class MainActivity : ComponentActivity() {
                 CalcolaScontoApp(appState, viewModelStoreOwner)
                 if (isUpdateAvailable) {
                     UpdateDialog {
-                        Toast.makeText(this, "Sto scaricando l'aggiornamento", Toast.LENGTH_LONG)
-                            .show()
                         coroutineScope.launch(Dispatchers.IO) {
                             updateManager.update()
                         }
-                    }
-                } else {
-                    val file = File(applicationContext.filesDir, "update.apk")
-                    if (file.exists()) {
-                        file.delete()
                     }
                 }
             }

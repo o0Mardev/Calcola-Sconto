@@ -64,7 +64,6 @@ class UpdateManager(private val context: Context) {
             response.body()
         } else null
     }
-
     private suspend fun downloadUpdate(fileUrl: String): ResponseBody? {
         val response = api.downloadFile(fileUrl)
         return response.body()
@@ -91,7 +90,6 @@ class UpdateManager(private val context: Context) {
         }
         return file
     }
-
 
     private fun installUpdateFile(file: File) {
         if (file.exists()) {
