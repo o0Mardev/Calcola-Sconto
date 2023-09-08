@@ -25,7 +25,7 @@ class HomeScreenViewModel: ViewModel() {
                 if (event.isVibrationEnabled){
                     event.view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                 }
-                calculate(event)
+                calculate()
             }
 
             is HomeScreenEvent.OnClearButtonClick -> {
@@ -56,7 +56,7 @@ class HomeScreenViewModel: ViewModel() {
         }
     }
 
-    private fun calculate(event: HomeScreenEvent) {
+    private fun calculate() {
         val price = _uiState.value.priceTextInput.toDoubleOrNull()
         val percentage = _uiState.value.percentageTextInput.toDoubleOrNull()
 
